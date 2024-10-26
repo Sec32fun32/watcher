@@ -332,7 +332,7 @@ existing-targets-of-platform() {
   # find has no equivalent of -x
     all-buildcfgs \
   | while read -r buildcfg
-    do find "$(opo "$buildcfg")" -maxdepth 1 -name 'wtr*' -or -name 'tw*' \
+    do find "$(opo "$buildcfg")" -maxdepth 1 -name 'wtr*' -or -name 'tw*' -or -name 'libw*' \
   | while read -r target
     do if [[ -x "$target" && -f "$target" ]]
        then echo "$target"
@@ -361,6 +361,11 @@ show-buildcmd-of() {
       -S '$PWD'
       -B '$(out-path-of "$platform" "$buildcfg")'
       -G 'Unix Makefiles'
+      -DBUILD_LIB=ON
+      -DBUILD_BIN=ON
+      -DBUILD_HDR=ON
+      -DBUILD_TESTING=ON
+      -DBUILD_SAN=ON
       -DCMAKE_BUILD_TYPE='$buildcfg' $(
       [ "$platform" = android ] \
         && echo "-DCMAKE_ANDROID_NDK='$ANDROID_NDK_HOME'")
