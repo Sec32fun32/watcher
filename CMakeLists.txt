@@ -196,9 +196,10 @@ function(wtr_add_bin_target
     set_property(TARGET "${NAME}" PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
   endif()
   if(APPLE)
-  set_property(
-    TARGET "${NAME}"
-    PROPERTY XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "org.${NAME}")
+    set_property(
+      TARGET "${NAME}"
+      PROPERTY XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "org.${NAME}"
+    )
   endif()
   if(IS_TEST)
     if(DEFINED ENV{WTR_WATCHER_USE_SYSTEM_SNITCH})
@@ -248,6 +249,13 @@ function(wtr_add_lib_target NAME OUTPUT_NAME SRC_SET INC_SET LIB_TYPE)
   target_compile_options("${NAME}" PRIVATE "${COMPILE_OPTIONS}")
   target_link_options("${NAME}" PRIVATE "${LINK_OPTIONS}")
   target_link_libraries("${NAME}" PRIVATE "${LINK_LIBRARIES}")
+  if(APPLE)
+    set_property(
+      TARGET "${NAME}" PROPERTIES
+      INSTALL_RPATH "/usr/local/lib"
+      BUILD_RPATH "/usr/local/lib"
+    )
+  endif()
   install(
     TARGETS "${NAME}"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}"
