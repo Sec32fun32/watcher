@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.13.2
+
+When building for Apple targets, CMake now adds an RPATH to the library targets (i.e. `watcher-c`).
+
+The CMake buildfile now uses a more conventional `BUILD_TESTING` to control whether test targets are produced (instead of `BUILD_TEST`).
+
+Various documentation improvements in the readme and CMake build file.
+
 ## 0.13.1
 
 Added `watcher-c`, as a (versioned) shared library, as a static library, and with headers, to the CMake build file.
