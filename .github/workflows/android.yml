@@ -20,8 +20,8 @@ jobs:
         target-platform:
           - android
         android-ndk-major-version:
-          - '25'
-          - '26'
+          - '27'
+          - '28'
         os:
           - ubuntu-22.04
     steps:
