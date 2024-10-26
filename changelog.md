@@ -2,9 +2,10 @@
 
 ## 0.13.2
 
-When building for Apple targets, CMake now adds an RPATH to the library targets (i.e. `watcher-c`).
-
-The CMake buildfile now uses a more conventional `BUILD_TESTING` to control whether test targets are produced (instead of `BUILD_TEST`).
+CMake now:
+- Defaults to *not* build sanitizer and test targets
+- Adds an RPATH to the library targets (i.e. `watcher-c`) when building for Apple targets
+- Uses a more conventional `BUILD_TESTING` to control whether test targets are produced (instead of `BUILD_TEST`)
 
 Various documentation improvements in the readme and CMake build file.
 
