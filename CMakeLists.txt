@@ -250,11 +250,8 @@ function(wtr_add_lib_target NAME OUTPUT_NAME SRC_SET INC_SET LIB_TYPE)
   target_link_options("${NAME}" PRIVATE "${LINK_OPTIONS}")
   target_link_libraries("${NAME}" PRIVATE "${LINK_LIBRARIES}")
   if(APPLE)
-    set_property(
-      TARGET "${NAME}" PROPERTIES
-      INSTALL_RPATH "/usr/local/lib"
-      BUILD_RPATH "/usr/local/lib"
-    )
+    set_property(TARGET "${NAME}" PROPERTY INSTALL_RPATH "/usr/local/lib")
+    set_property(TARGET "${NAME}" PROPERTY BUILD_RPATH "/usr/local/lib")
   endif()
   install(
     TARGETS "${NAME}"
@@ -301,6 +298,19 @@ function(wtr_add_test_bin_target NAME SRC_SET)
   )
 endfunction()
 
+function(wtr_add_san_rel_bin_target NAME SRC_SET SAN)
+  wtr_add_bin_target(
+    "${NAME}.${SAN}"
+    "test-bin"
+    "OFF" # is test
+    "${SRC_SET}"
+    "${COMPILE_OPTIONS};${CCLL_EXTOPT_SET_${SAN}}"
+    "${LINK_OPTIONS};${CCLL_EXTOPT_SET_${SAN}}"
+    "${INCLUDE_PATH_DEVEL}"
+    "${LINK_LIBRARIES}"
+  )
+endfunction()
+
 function(wtr_add_san_test_bin_target NAME SRC_SET SAN)
   wtr_add_bin_target(
     "${NAME}.${SAN}"
@@ -328,18 +338,41 @@ function(wtr_add_autosan_bin_target NAME SRC_SET IS_TEST)
       message(STATUS "${NAME}.${SAN}: Skipped (BUILD_${UPPER_SAN}=${BUILD_${UPPER_SAN}})")
     elseif(NOT ALLOWED_${SAN})
       message(STATUS "${NAME}.${SAN}: Skipped (Unsupported on ${CMAKE_SYSTEM}/${CMAKE_CXX_COMPILER_ID})")
+    elseif(IS_TEST)
+      wtr_add_san_test_bin_target("${NAME}" "${SRC_SET}" "${SAN}")
     else()
-      wtr_add_bin_target(
-        "${NAME}.${SAN}"
-        "san-bin"
-        "${IS_TEST}"
-        "${SRC_SET}"
-        "${COMPILE_OPTIONS};${CCLL_EXTOPT_SET_${SAN}}"
-        "${LINK_OPTIONS};${CCLL_EXTOPT_SET_${SAN}}"
-        "include"
-        "${LINK_LIBRARIES}"
-      )
+      wtr_add_san_rel_bin_target("${NAME}" "${SRC_SET}" "${SAN}")
     endif()
+  endforeach()
+endfunction()
+
+function(wtr_add_san_lib_target NAME OUTPUT_NAME SRC_SET INC_SET LIB_TYPE SAN)
+  string(TOUPPER "${SAN}" UPPER_SAN)
+  if (NOT BUILD_LIB)
+    message(STATUS "${NAME}: Skipped (BUILD_LIB=${BUILD_LIB})")
+    return()
+  elseif (NOT BUILD_SAN)
+    message(STATUS "${NAME}: Skipped (BUILD_SAN=${BUILD_SAN})")
+    return()
+  elseif (NOT BUILD_${UPPER_SAN})
+    message(STATUS "${NAME}: Skipped (BUILD_${UPPER_SAN}=${BUILD_${UPPER_SAN}})")
+    return()
+  elseif (NOT ALLOWED_${SAN})
+    message(STATUS "${NAME}: Skipped (Unsupported on ${CMAKE_SYSTEM}/${CMAKE_CXX_COMPILER_ID})")
+    return()
+  endif()
+  message(STATUS "${NAME}: Added (BUILD_${UPPER_SAN}=${BUILD_${UPPER_SAN}}, BUILD_LIB=${BUILD_LIB})")
+  wtr_add_lib_target("${NAME}" "${OUTPUT_NAME}" "${SRC_SET}" "${INC_SET}" "${LIB_TYPE}")
+  message(STATUS "${NAME}: Adding sanitizer ${SAN}, opts: ${CCLL_EXTOPT_SET_${UPPER_SAN}}")
+  target_compile_options("${NAME}" PRIVATE "${COMPILE_OPTIONS};${CCLL_EXTOPT_SET_${UPPER_SAN}}")
+  target_link_options("${NAME}" PRIVATE "${LINK_OPTIONS};${CCLL_EXTOPT_SET_${UPPER_SAN}}")
+endfunction()
+
+function(wtr_add_autosan_lib_target NAME OUTPUT_NAME SRC_SET INC_SET LIB_TYPE)
+  wtr_add_lib_target("${NAME}" "${OUTPUT_NAME}" "${SRC_SET}" "${INC_SET}" "${LIB_TYPE}")
+  foreach(SAN ${SAN_NAMES})
+    string(TOUPPER ${SAN} UPPER_SAN)
+    wtr_add_san_lib_target("${NAME}.${SAN}" "${OUTPUT_NAME}.${SAN}" "${SRC_SET}" "${INC_SET}" "${LIB_TYPE}" "${SAN}")
   endforeach()
 endfunction()
 
@@ -357,7 +390,7 @@ wtr_add_hdr_target(
   "watcher-c/include/wtr/watcher-c.h"
 )
 
-wtr_add_lib_target(
+wtr_add_autosan_lib_target(
   "watcher-c-shared"
   "watcher-c"
   "watcher-c/src/watcher-c.cpp"
@@ -365,7 +398,7 @@ wtr_add_lib_target(
   "SHARED"
 )
 
-wtr_add_lib_target(
+wtr_add_autosan_lib_target(
   "watcher-c-static"
   "watcher-c"
   "watcher-c/src/watcher-c.cpp"
@@ -376,13 +409,13 @@ wtr_add_lib_target(
 wtr_add_autosan_bin_target(
   "wtr.watcher"
   "src/wtr/watcher/main.cpp"
-  IS_TEST OFF
+  OFF
 )
 
 wtr_add_autosan_bin_target(
   "tw"
   "src/wtr/tiny_watcher/main.cpp"
-  IS_TEST ON
+  OFF
 )
 
 set(WTR_TEST_WATCHER_SOURCE_SET
