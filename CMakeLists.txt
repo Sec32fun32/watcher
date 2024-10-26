@@ -23,15 +23,15 @@ project(
 # Options, Variable & Constants
 #
 
-option(BUILD_LIB     "Create a target for the watcher-c libraries"          ON)
-option(BUILD_BIN     "Create a target for the CLI binaries"                 ON)
-option(BUILD_HDR     "Create a target for the watcher headers"              ON)
-option(BUILD_TESTING "Create a target for the test programs"                ON)
-option(BUILD_SAN     "Mega-option to allow sanitizers"                      ON)
-option(BUILD_ASAN    "Create a target for the address sanitizer"            ON)
-option(BUILD_MSAN    "Create a target for the memory sanitizer"             ON)
-option(BUILD_TSAN    "Create a target for the thread sanitizer"             ON)
-option(BUILD_UBSAN   "Create a target for the undefined behavior sanitizer" ON)
+option(BUILD_LIB     "Create targets for the watcher-c libraries" ON)
+option(BUILD_BIN     "Create targets for the CLI binaries" ON)
+option(BUILD_HDR     "Create targets for the headers (both the C++ single-header library and the watcher-c library header)" ON)
+option(BUILD_TESTING "Create targets for the test programs" ON)
+option(BUILD_SAN     "Mega-option to allow sanitizers" ON)
+option(BUILD_ASAN    "Create targets address-sanitized libraries and binaries" ON)
+option(BUILD_MSAN    "Create targets memory-sanitized libraries and binaries" ON)
+option(BUILD_TSAN    "Create targets thread-sanitized libraries and binaries" ON)
+option(BUILD_UBSAN   "Create targets undefined-behavior-sanitized libraries and binaries" ON)
 
 set(WTR_WATCHER_CXX_STD 17)
 
