@@ -358,11 +358,12 @@ A capable program is [here](https://github.com/e-dant/watcher/blob/release/src/w
 ## Consume
 
 This project is accessible through:
-- Conan: Includes the header
+- Conan: Includes the C++ header/library
 - Nix: Provides isolation, determinism, includes header, cli, test and benchmark targets
-- Bazel: Provides isolation, include header and cli targets
-- `tool/build`: Includes header, cli, test and benchmark targets
-- CMake: Includes header, cli, test and benchmark targets
+- Bazel: Provides isolation, includes the C++ header/library and cli targets
+- `tool/build`: Includes the C++ header/library, cli, test and benchmark targets
+- `tool/cross`: Includes the `watcher-c` shared library and header, cross-compiled for many platforms
+- CMake: Includes the single-header C++ library, the `watcher-c` library (static and shared), cli, test and benchmark targets
 - Just copying the header file
 
 <details>
