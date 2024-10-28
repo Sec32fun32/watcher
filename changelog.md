@@ -3,6 +3,8 @@
 ## 0.13.2
 
 CMake now:
+- Does not optimize away our entire library (no `-fwhole-program` when building libraries)
+- Uses a linker version script on linux when building the watcher-c shared library
 - Defaults to *not* build sanitizer and test targets
 - Adds an RPATH to the library targets (i.e. `watcher-c`) when building for Apple targets
 - Uses a more conventional `BUILD_TESTING` to control whether test targets are produced (instead of `BUILD_TEST`)
