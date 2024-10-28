@@ -94,7 +94,6 @@ if(NOT WIN32 AND NOT IS_CC_MSVC)
     set(COMPILE_OPTIONS
       "${COMPILE_OPTIONS}"
       "-fexpensive-optimizations"
-      "-fwhole-program"
     )
   endif()
 endif()
@@ -187,7 +186,11 @@ function(wtr_add_bin_target
   include(GNUInstallDirs)
   add_executable("${NAME}" "${SRC_SET}")
   set_property(TARGET "${NAME}" PROPERTY CXX_STANDARD "${WTR_WATCHER_CXX_STD}")
-  target_compile_options("${NAME}" PRIVATE "${CC_OPT_SET}")
+  if(NOT WIN32 AND NOT IS_CC_MSVC AND NOT IS_CC_APPLECLANG)
+    target_compile_options("${NAME}" PRIVATE "${CC_OPT_SET};-fwhole-program")
+  else()
+    target_compile_options("${NAME}" PRIVATE "${CC_OPT_SET}")
+  endif()
   target_link_options("${NAME}" PRIVATE "${LL_OPT_SET}")
   target_include_directories("${NAME}" PUBLIC "${INCLUDE_PATH}")
   target_link_libraries("${NAME}" PRIVATE "${LLIB_SET}")
