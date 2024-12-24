@@ -12,7 +12,7 @@
     "example": "node examples/example-usage.js"
   },
   "dependencies": {
-    "node-gyp": "^10.2.0"
+    "node-gyp": "^10.3.1"
   },
   "devDependencies": {
     "jest": "^29.7.0"
